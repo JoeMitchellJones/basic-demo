@@ -1,0 +1,34 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: cimg/base:2022.11 # Main image that commands will be run on
+      - image: cimg/mysql:5.7.38 # Sidecar image that can be used by main e.g. a database
+    steps:
+      - checkout
+      - run: echo "I'm running a step!"
+      - run: mkdir -p workspace
+      - run:
+          name: Create object
+          command: echo "A very useful object" > workspace/object.out
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - object.out
+
+  test:
+    docker:
+      - image: cimg/base:2022.11
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - run: cat /tmp/workspace/object.out
+
+workflows:
+  build-and-test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build

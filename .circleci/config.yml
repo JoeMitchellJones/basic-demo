@@ -5,6 +5,7 @@ jobs:
     docker:
       - image: cimg/base:2022.11 # Main image that commands will be run on
       - image: cimg/mysql:5.7.38 # Sidecar image that can be used by main e.g. a database
+    resource_class: joemitchelljones/runner-experiment
     steps:
       - checkout # Checks out the repository
       - run: echo "I'm running a step!"
@@ -20,6 +21,7 @@ jobs:
   test:
     docker:
       - image: cimg/base:2022.11
+    resource_class: joemitchelljones/runner-experiment
     steps:
       - attach_workspace:
           at: /tmp/workspace # Good practice is to attach in /tmp

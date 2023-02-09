@@ -1,36 +1,31 @@
 version: 2.1
 
-jobs:
-  build:
-    docker:
-      - image: cimg/base:2022.11 # Main image that commands will be run on
-      - image: cimg/mysql:5.7.38 # Sidecar image that can be used by main e.g. a database
-    steps:
-      - checkout # Checks out the repository
-      - run: echo "I'm running a step!"
-      - run: mkdir -p workspace
-      - run:
-          name: Create object # You can also give steps custom names
-          command: echo "A very useful object" > workspace/object.out
-      - persist_to_workspace:
-          root: workspace # Must be absolute, or relative from working directory
-          paths:
-            - object.out # Must be relative from root
+parameters:
+  hello1:
+    type: enum
+    default: ["first hello1", "second hello1"]
+  hello2:
+    type: enum
+    default: ["first hello2", "second hello2", "third hello2"]
 
-  test:
+jobs:
+  hello:
+    parameters:
+      hello1:
+        type: string
+      hello2:
+        type: string
     docker:
       - image: cimg/base:2022.11
     steps:
-      - attach_workspace:
-          at: /tmp/workspace # Good practice is to attach in /tmp
-      - run: cat /tmp/workspace/object.out
-      - run: echo $TEST_ENV_VAR # We can echo env vars defined in the project settings
-      - run: exit 1
+      - run: echo << parameters.hello1 >>
+      - run: echo << parameters.hello2 >>
 
 workflows:
   build-and-test:
     jobs:
-      - build
-      - test:
-          requires:
-            - build
+      - hello:
+          matrix:
+            parameters:
+              hello1: << pipeline.parameters.matrix1 >>
+              hello2: << pipeline.parameters.matrix2 >>

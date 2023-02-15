@@ -9,6 +9,7 @@ jobs:
       - checkout # Checks out the repository
       - run: echo "I'm running a step!"
       - run: mkdir -p workspace
+      - run: echo $CONTEXT_VAR
       - run:
           name: Create object # You can also give steps custom names
           command: echo "A very useful object" > workspace/object.out
@@ -30,7 +31,9 @@ jobs:
 workflows:
   build-and-test:
     jobs:
-      - build
+      - build:
+          context:
+            - demo-context
       - test:
           requires:
             - build

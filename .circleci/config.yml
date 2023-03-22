@@ -26,7 +26,7 @@ jobs:
           at: /tmp/workspace # Good practice is to attach in /tmp
       - run: cat /tmp/workspace/object.out
       - run: echo $TEST_ENV_VAR # We can echo env vars defined in the project settings
-      - run: exit 1
+      - run: echo "THIS IS A DELIBERATE FAIL" && exit 1
 
 workflows:
   build-and-test:

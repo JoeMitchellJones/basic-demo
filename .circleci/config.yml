@@ -28,6 +28,10 @@ jobs:
           at: /tmp/workspace # Good practice is to attach in /tmp
       - run: cat /tmp/workspace/object.out
       - run: echo $TEST_ENV_VAR # We can echo env vars defined in the project settings
+      - run: echo << pipeline.trigger_source >> > /tmp/trigger_source.out
+      - store_artifacts:
+          path: /tmp
+          destination: trigger_source.out
       - run: echo "THIS IS A DELIBERATE FAIL" && exit 1
 
 workflows:

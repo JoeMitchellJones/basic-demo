@@ -34,5 +34,6 @@ workflows:
     jobs:
       - build
       - test:
+          name: 'custom-test-name'
           requires:
             - build

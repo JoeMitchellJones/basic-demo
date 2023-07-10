@@ -41,5 +41,6 @@ workflows:
           context:
             - demo-context
       - test:
+          name: 'custom-test-name'
           requires:
             - build

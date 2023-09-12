@@ -21,7 +21,7 @@ jobs:
   test:
     docker:
       - image: cimg/base:2022.11
-    resource_class: joemitchelljones/runner-experiment
+    resource_class: joemitchelljones/local-runner
     steps:
       - attach_workspace:
           at: /tmp/workspace # Good practice is to attach in /tmp

@@ -8,7 +8,7 @@ jobs:
     resource_class: joemitchelljones/local-runner
     steps:
       - checkout # Checks out the repository
-      - run: echo "I'm running a step!"
+      - run: echo "I'm running a new step!"
       - run: mkdir -p workspace
       - run:
           name: Create object # You can also give steps custom names

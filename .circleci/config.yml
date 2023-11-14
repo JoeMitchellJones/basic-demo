@@ -1,46 +1,44 @@
+
 version: 2.1
+
+orbs:
+  win: circleci/windows@5.0
+  maven: circleci/maven@1.4.1
+
+executors:
+  maven-win:
+    machine:
+      image: windows-server-2022-gui:current
+      resource_class: windows.medium
+      shell: bash.exe
 
 jobs:
   build:
-    docker:
-      - image: cimg/base:2022.11 # Main image that commands will be run on
-      - image: cimg/mysql:5.7.38 # Sidecar image that can be used by main e.g. a database
-    resource_class: small
+    executor:
+      name: win/default
+      size: medium
+      shell: powershell.exe
     steps:
-      - checkout # Checks out the repository
-      - run: echo "I'm running a step!"
-      - run: mkdir -p workspace
-      - run: echo $MY_CONTEXT_VAR
       - run:
-          name: Create object # You can also give steps custom names
-          command: echo "A very useful object" > workspace/object.out
-      - persist_to_workspace:
-          root: workspace # Must be absolute, or relative from working directory
-          paths:
-            - object.out # Must be relative from root
-
-  test:
-    docker:
-      - image: cimg/base:2022.11
-    resource_class: small
-    steps:
-      - attach_workspace:
-          at: /tmp/workspace # Good practice is to attach in /tmp
-      - run: cat /tmp/workspace/object.out
-      - run: echo $TEST_ENV_VAR # We can echo env vars defined in the project settings
-      - run: echo << pipeline.trigger_source >> > /tmp/trigger_source.out
-      - store_artifacts:
-          path: /tmp
-          destination: trigger_source.out
-      - run: echo "THIS IS A DELIBERATE FAIL" && exit 1
+          command: $(echo hello | Out-Host; $?) -and $(echo world | Out-Host; $?)
+          shell: powershell.exe
+      - run:
+          command: echo hello && echo world
+          shell: bash.exe
+      - run:
+          command: echo hello & echo world
+          shell: cmd.exe
+      - run:
+          command: choco install -y maven --version=3.9.4
+          shell: powershell.exe
+      - run:
+          command: $MVN_PATH/mvn -v
+          shell: bash.exe
+          when: always
 
 workflows:
-  build-and-test:
+  build-workflow:
     jobs:
-      - build:
-          context:
-            - demo-context
-      - test:
-          name: 'custom-test-name'
-          requires:
-            - build
+      - build
+      - maven/test:
+          executor: maven-win
